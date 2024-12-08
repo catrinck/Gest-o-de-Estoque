@@ -32,6 +32,11 @@ router.post('/', (req, res) => {
         }
 
         const suppliers = readSuppliersFile();
+        
+        if (cnpj && suppliers.some(s => s.cnpj === cnpj)) {
+            return res.status(400).json({ message: 'CNPJ já cadastrado.' });
+        }
+
         const newSupplier = {
             id: suppliers.length ? suppliers[suppliers.length - 1].id + 1 : 1,
             name,
@@ -48,5 +53,4 @@ router.post('/', (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 module.exports = router;

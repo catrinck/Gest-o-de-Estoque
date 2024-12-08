@@ -35,14 +35,21 @@ router.post('/', (req, res) => {
             return res.status(400).json({ message: 'Quantidade não pode ser negativa.' });
         }
 
+        const suppliers = JSON.parse(fs.readFileSync(path.join(__dirname, '../data/suppliers.json')));
+        const supplierExists = suppliers.some(s => s.id.toString() === supplier_id.toString());
+        
+        if (!supplierExists) {
+            return res.status(400).json({ message: 'Fornecedor não encontrado.' });
+        }
+
         const products = readProductsFile();
         const newProduct = {
             id: products.length ? products[products.length - 1].id + 1 : 1,
             name,
             description,
             type,
-            current_quantity,
-            minimum_quantity,
+            current_quantity: Number(current_quantity),
+            minimum_quantity: Number(minimum_quantity),
             supplier_id
         };
 
@@ -54,5 +61,4 @@ router.post('/', (req, res) => {
         res.status(500).json({ message: error.message });
     }
 });
-
 module.exports = router;
