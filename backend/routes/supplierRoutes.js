@@ -17,7 +17,7 @@ router.post('/', async (req, res) => {
         const { name, cnpj, phone, address } = req.body;
 
         if (!name || !phone) {
-            return res.status(400).json({ message: 'Nome e telefone são obrigatórios!' });
+            return res.status(400).json({ message: 'Nome e telefone são obrigatórios.' });
         }
 
         const [result] = await db.query(

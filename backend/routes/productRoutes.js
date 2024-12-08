@@ -17,13 +17,13 @@ router.post('/', async (req, res) => {
 
         if (!name || !description || !type || current_quantity === undefined || minimum_quantity === undefined || !supplier_id) {
             return res.status(400).json({ 
-                message: 'Name, description, type, current quantity and minimum quantity are required' 
+                message: 'Todos os campos são obrigatórios.' 
             });
         }
 
         if (current_quantity < 0 || minimum_quantity < 0) {
             return res.status(400).json({ 
-                message: 'Quantities cannot be negative' 
+                message: 'Quantidade não pode ser negativa.' 
             });
         }
 
