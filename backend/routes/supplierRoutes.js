@@ -1,18 +1,29 @@
-// Modified routes/supplierRoutes.js
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const router = express.Router();
-const db = require('../config/database');
 
-router.get('/', async (req, res) => {
+const suppliersFilePath = path.join(__dirname, '../data/suppliers.json');
+
+const readSuppliersFile = () => {
+    const data = fs.readFileSync(suppliersFilePath);
+    return JSON.parse(data);
+};
+
+const writeSuppliersFile = (data) => {
+    fs.writeFileSync(suppliersFilePath, JSON.stringify(data, null, 2));
+};
+
+router.get('/', (req, res) => {
     try {
-        const [suppliers] = await db.query('SELECT * FROM suppliers');
+        const suppliers = readSuppliersFile();
         res.json(suppliers);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 });
 
-router.post('/', async (req, res) => {
+router.post('/', (req, res) => {
     try {
         const { name, cnpj, phone, address } = req.body;
 
@@ -20,18 +31,19 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ message: 'Nome e telefone são obrigatórios.' });
         }
 
-        const [result] = await db.query(
-            'INSERT INTO suppliers (name, cnpj, phone, address) VALUES (?, ?, ?, ?)',
-            [name, cnpj || null, phone, address || null]
-        );
-        
-        res.status(201).json({ 
-            id: result.insertId,
+        const suppliers = readSuppliersFile();
+        const newSupplier = {
+            id: suppliers.length ? suppliers[suppliers.length - 1].id + 1 : 1,
             name,
             cnpj,
             phone,
             address
-        });
+        };
+
+        suppliers.push(newSupplier);
+        writeSuppliersFile(suppliers);
+
+        res.status(201).json(newSupplier);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
