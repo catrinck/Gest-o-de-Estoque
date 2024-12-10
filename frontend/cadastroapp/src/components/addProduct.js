@@ -22,6 +22,7 @@ const AddProduct = ({ onProductAdded }) => {
     const fetchSuppliers = async () => {
       try {
         const response = await axios.get("http://localhost:3000/api/suppliers");
+        console.log("Fornecedores carregados:", response.data); // Verifique se os fornecedores aparecem corretamente
         setSuppliers(response.data);
         setFilteredSuppliers(response.data); // Inicialmente, todos os fornecedores são exibidos
       } catch (err) {
@@ -76,19 +77,29 @@ const AddProduct = ({ onProductAdded }) => {
     setIsLoading(true);
     setError(null);
     setSuccess(false);
-
-    if (!validateForm()) {
+  
+    // Normaliza o nome do fornecedor
+    const supplierName = formData.supplier_id.trim().toLowerCase();
+    console.log("Nome do fornecedor enviado:", supplierName);
+  
+    // Verifica se o fornecedor existe no JSON
+    const supplierExists = suppliers.some(
+      (supplier) => supplier.name.toLowerCase() === supplierName
+    );
+  
+    if (!supplierExists) {
+      console.log("Fornecedores disponíveis:", suppliers); // Loga a lista de fornecedores para verificação
+      setError("Fornecedor não encontrado.");
       setIsLoading(false);
       return;
     }
-
+  
     try {
-      // Envia o produto para o backend
       const response = await axios.post(
         "http://localhost:3000/api/products",
         formData
       );
-
+  
       if (response.status === 201) {
         setSuccess(true);
         resetForm();
@@ -107,6 +118,8 @@ const AddProduct = ({ onProductAdded }) => {
       setIsLoading(false);
     }
   };
+  
+  
 
   return (
     <div className="add-product-container">
@@ -183,24 +196,39 @@ const AddProduct = ({ onProductAdded }) => {
           />
         </div>
         <div className="form-group">
-          <label htmlFor="supplier_id">Fornecedor</label>
-          <input
-            type="text"
-            id="supplier_id"
-            name="supplier_id"
-            placeholder="Digite ou selecione o fornecedor"
-            value={formData.supplier_id}
-            onChange={handleChange}
-            list="suppliers"
-            required
-            disabled={isLoading}
-          />
-          <datalist id="suppliers">
-            {filteredSuppliers.map((supplier) => (
-              <option key={supplier.id} value={supplier.name} />
-            ))}
-          </datalist>
-        </div>
+        <label htmlFor="supplier_id">Fornecedor</label>
+        <input
+          type="text"
+          id="supplier_id"
+          name="supplier_id"
+          placeholder="Digite ou selecione o fornecedor"
+          value={formData.supplier_id}
+          onChange={(e) => {
+            const inputValue = e.target.value.trim(); // Remove espaços em branco
+            setFormData((prev) => ({
+              ...prev,
+              supplier_id: inputValue, // Armazena o nome do fornecedor diretamente
+            }));
+
+            // Filtra fornecedores com base no valor digitado, normalizando para evitar problemas
+            setFilteredSuppliers(
+              suppliers.filter((supplier) =>
+                supplier.name.toLowerCase().includes(inputValue.toLowerCase())
+              )
+            );
+          }}
+          list="suppliers"
+          required
+          disabled={isLoading}
+        />
+        <datalist id="suppliers">
+          {filteredSuppliers.map((supplier) => (
+            <option key={supplier.id} value={supplier.name} />
+          ))}
+        </datalist>
+      </div>
+
+
         <div className="button-group">
           <button
             type="button"
