@@ -67,50 +67,56 @@ const AddSupplier = () => {
 
   return (
     <div className="add-supplier-form">
-      <h2>Adicionar Fornecedor</h2>
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">Fornecedor adicionado com sucesso!</div>}
-      
       <form onSubmit={handleSubmit}>
+        {}
+        <div className="input-container"> 
+        <div className="box">NOME</div>
         <input 
           type="text" 
           name="name" 
-          placeholder="Nome" 
           value={formData.name}
           onChange={handleChange} 
           required 
           disabled={isLoading}
-        />
+        /> </div>
+        {}
+        <div className="input-container">
+        <div className="box">CNPJ (OPCIONAL)</div>
         <input 
           type="text" 
           name="cnpj" 
-          placeholder="CNPJ"
           value={formData.cnpj} 
           onChange={handleChange}
           disabled={isLoading}
-        />
+        /></div>
+        {}
+        <div className="input-container">
+        <div className="box">TELEFONE</div>
         <input 
           type="tel" 
           name="phone" 
-          placeholder="Telefone"
           value={formData.phone} 
           onChange={handleChange} 
           required 
           disabled={isLoading}
-        />
+        /></div>
+        {}
+        <div className="input-container">
+        <div className="box">ENDEREÇO (OPCIONAL)</div>
         <input 
           type="text" 
           name="address" 
-          placeholder="Endereço"
           value={formData.address} 
           onChange={handleChange}
           disabled={isLoading}
-        />
+        /></div>
         <button 
           type="submit"
           disabled={isLoading}
         >
-          {isLoading ? 'Adicionando...' : 'Adicionar Fornecedor'}
+          {isLoading ? 'Adicionando...' : 'CONFIRMAR CADASTRO DE FORNECEDOR'}
         </button>
       </form>
     </div>

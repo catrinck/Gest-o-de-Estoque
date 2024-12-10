@@ -1,0 +1,118 @@
+
+.sidebar {
+    background-color: #0033cc; /* Azul escuro */
+    padding: 20px;
+    height: 100vh;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .sidebar button {
+    background-color: #fff;
+    border: none;
+    padding: 17px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+  }
+  
+  .sidebar button:hover {
+    background-color: #cccccc;
+  }
+  
+ 
+/* Container geral do formulário */
+.add-supplier-form {
+    margin: 50px auto;
+    text-align: center;
+  }
+  
+
+.add-supplier-form .input-container {
+  display: flex; /* Organiza .box e input lado a lado */
+  align-items: center; /* Alinha verticalmente */
+}
+  
+.add-supplier-form .box{
+    background-color: #0033cc;
+    color: white;
+    border-radius: 10px;
+    width: 328px;
+    height: 65px;
+    display: flex;               /* Adiciona Flexbox */
+    justify-content: center;     /* Centraliza horizontalmente */
+    align-items: center;         /* Centraliza verticalmente */
+    text-align: center;          /* Garante que o texto esteja centralizado dentro da caixa */
+    font-size: 18px;    
+    font-weight: bold;
+    margin-right: 40px;
+ }
+
+  /* Estilo para as entradas do formulário */
+  .add-supplier-form input {
+    width: 478px;
+    height: 40px;
+    padding: 12px 15px;
+    margin: 35px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 16px;  
+    background-color: #f7f7f7;
+    transition: border-color 0.3s ease;      
+  }
+  
+  /* Foco nos inputs */
+  .add-supplier-form input:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  /* Estilo do botão de envio */
+  .add-supplier-form button {
+    width: 328px;
+    height: 100px;
+    padding: 15px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+  }
+  
+  .add-supplier-form button:hover {
+    background-color: #126323;
+  }
+  
+  .add-supplier-form button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  /* Mensagens de erro e sucesso */
+  .add-supplier-form .error-message {
+    color: #fff;
+    background-color: #f44336;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  
+  .add-supplier-form .success-message {
+    color: #fff;
+    background-color: #4caf50;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-size: 16px;
+  }
+  

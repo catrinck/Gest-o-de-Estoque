@@ -4,16 +4,14 @@ import ProductList from './components/productList';
 import AddProduct from './components/addProduct';
 import SupplierList from './components/supplierList';
 import AddSupplier from './components/addSupplier';
+import Sidebar from './components/Sidebar'; 
 
 function App() {
   return (
-    <div className="App">
+    <div className="App" style={{ display: 'flex' }}>
+      <Sidebar />
       <header className="App-header">
-        <h1>Gestão de Estoque Show Papai + Aglison</h1>
       </header>
-      <ProductList />
-      <AddProduct />
-      <SupplierList />
       <AddSupplier />
     </div>
   );
