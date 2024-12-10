@@ -1,19 +1,26 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
-import ProductList from './components/productList';
-import AddProduct from './components/addProduct';
-import SupplierList from './components/supplierList';
-import AddSupplier from './components/addSupplier';
-import Sidebar from './components/Sidebar'; 
+import Sidebar from './components/Sidebar';
+import AddProduct from 'C:\\Users\\catri\\react-app\\frontend\\cadastroapp\\src\\components\\addProduct.js'
+import AddSupplier from 'C:\\Users\\catri\\react-app\\frontend\\cadastroapp\\src\\components\\addSupplier.js';
 
 function App() {
   return (
-    <div className="App" style={{ display: 'flex' }}>
-      <Sidebar />
-      <header className="App-header">
-      </header>
-      <AddSupplier />
-    </div>
+    <Router>
+      <div className="App" style={{ display: 'flex' }}>
+        {/* Sidebar fixa */}
+        <Sidebar />
+
+        {/* Conteúdo principal */}
+        <div style={{ flex: 1 }}>
+          <Routes>
+            <Route path="/add-product" element={<AddProduct />} />
+            <Route path="/add-supplier" element={<AddSupplier />} />
+          </Routes>
+        </div>
+      </div>
+    </Router>
   );
 }
 
