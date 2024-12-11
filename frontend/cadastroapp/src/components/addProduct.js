@@ -1,15 +1,15 @@
-import 'C:\\Users\\catri\\react-app\\frontend\\cadastroapp\\src\\addproduct.css'; // Estilo integrado
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import '../addproduct.css';
 
 const AddProduct = ({ onProductAdded }) => {
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    type: "",
+    name: '',
+    description: '',
+    type: '',
     current_quantity: 0,
     minimum_quantity: 0,
-    supplier_id: "",
+    supplier_id: ''
   });
   const [suppliers, setSuppliers] = useState([]); // Lista de fornecedores
   const [filteredSuppliers, setFilteredSuppliers] = useState([]); // Fornecedores filtrados
@@ -21,13 +21,12 @@ const AddProduct = ({ onProductAdded }) => {
   useEffect(() => {
     const fetchSuppliers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/suppliers");
-        console.log("Fornecedores carregados:", response.data); // Verifique se os fornecedores aparecem corretamente
+        const response = await axios.get('http://localhost:3000/api/suppliers');
         setSuppliers(response.data);
         setFilteredSuppliers(response.data); // Inicialmente, todos os fornecedores são exibidos
       } catch (err) {
-        console.error("Erro ao buscar fornecedores:", err);
-        setError("Erro ao carregar fornecedores");
+        console.error('Erro ao buscar fornecedores:', err);
+        setError('Erro ao carregar fornecedores');
       }
     };
     fetchSuppliers();
@@ -37,13 +36,13 @@ const AddProduct = ({ onProductAdded }) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name.includes("quantity") ? parseInt(value) || 0 : value,
+      [name]: name.includes('quantity') ? parseInt(value) || 0 : value,
     }));
     setError(null);
     setSuccess(false);
 
     // Filtragem do dropdown
-    if (name === "supplier_id") {
+    if (name === 'supplier_id') {
       const filtered = suppliers.filter((supplier) =>
         supplier.name.toLowerCase().includes(value.toLowerCase())
       );
@@ -53,12 +52,12 @@ const AddProduct = ({ onProductAdded }) => {
 
   const resetForm = () => {
     setFormData({
-      name: "",
-      description: "",
-      type: "",
+      name: '',
+      description: '',
+      type: '',
       current_quantity: 0,
       minimum_quantity: 0,
-      supplier_id: "",
+      supplier_id: ''
     });
     setError(null);
     setSuccess(false); // Garante que a mensagem de sucesso não será exibida
@@ -66,7 +65,7 @@ const AddProduct = ({ onProductAdded }) => {
 
   const validateForm = () => {
     if (formData.current_quantity < 0 || formData.minimum_quantity < 0) {
-      setError("As quantidades não podem ser negativas");
+      setError('As quantidades não podem ser negativas');
       return false;
     }
     return true;
@@ -77,29 +76,28 @@ const AddProduct = ({ onProductAdded }) => {
     setIsLoading(true);
     setError(null);
     setSuccess(false);
-  
-    // Normaliza o nome do fornecedor
-    const supplierName = formData.supplier_id.trim().toLowerCase();
-    console.log("Nome do fornecedor enviado:", supplierName);
-  
-    // Verifica se o fornecedor existe no JSON
-    const supplierExists = suppliers.some(
-      (supplier) => supplier.name.toLowerCase() === supplierName
-    );
-  
-    if (!supplierExists) {
-      console.log("Fornecedores disponíveis:", suppliers); // Loga a lista de fornecedores para verificação
-      setError("Fornecedor não encontrado.");
+
+    if (!validateForm()) {
       setIsLoading(false);
       return;
     }
-  
+
     try {
-      const response = await axios.post(
-        "http://localhost:3000/api/products",
-        formData
+      // Verify supplier exists
+      const supplier = suppliers.find(
+        (supplier) => supplier.name.toLowerCase() === formData.supplier_id.toLowerCase()
       );
-  
+
+      if (!supplier) {
+        throw new Error('Fornecedor não encontrado');
+      }
+
+      // Submit product
+      const response = await axios.post('http://localhost:3000/api/products', {
+        ...formData,
+        supplier_id: supplier.id // Use supplier ID instead of name
+      });
+
       if (response.status === 201) {
         setSuccess(true);
         resetForm();
@@ -108,18 +106,12 @@ const AddProduct = ({ onProductAdded }) => {
         }
       }
     } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          error.message ||
-          "Erro ao adicionar o produto"
-      );
-      console.error("Erro ao adicionar produto:", error);
+      setError(error.response?.data?.message || error.message || 'Erro ao adicionar o produto');
+      console.error('Erro ao adicionar produto:', error);
     } finally {
       setIsLoading(false);
     }
   };
-  
-  
 
   return (
     <div className="add-product-container">
@@ -127,7 +119,7 @@ const AddProduct = ({ onProductAdded }) => {
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">Produto adicionado com sucesso!</div>}
 
-      <form onSubmit={handleSubmit} className="product-form">
+      <form onSubmit={handleSubmit} className="add-product-form">
         <div className="form-group">
           <label htmlFor="name">Nome do Produto</label>
           <input
@@ -196,39 +188,24 @@ const AddProduct = ({ onProductAdded }) => {
           />
         </div>
         <div className="form-group">
-        <label htmlFor="supplier_id">Fornecedor</label>
-        <input
-          type="text"
-          id="supplier_id"
-          name="supplier_id"
-          placeholder="Digite ou selecione o fornecedor"
-          value={formData.supplier_id}
-          onChange={(e) => {
-            const inputValue = e.target.value.trim(); // Remove espaços em branco
-            setFormData((prev) => ({
-              ...prev,
-              supplier_id: inputValue, // Armazena o nome do fornecedor diretamente
-            }));
-
-            // Filtra fornecedores com base no valor digitado, normalizando para evitar problemas
-            setFilteredSuppliers(
-              suppliers.filter((supplier) =>
-                supplier.name.toLowerCase().includes(inputValue.toLowerCase())
-              )
-            );
-          }}
-          list="suppliers"
-          required
-          disabled={isLoading}
-        />
-        <datalist id="suppliers">
-          {filteredSuppliers.map((supplier) => (
-            <option key={supplier.id} value={supplier.name} />
-          ))}
-        </datalist>
-      </div>
-
-
+          <label htmlFor="supplier_id">Fornecedor</label>
+          <input
+            type="text"
+            id="supplier_id"
+            name="supplier_id"
+            placeholder="Digite ou selecione o fornecedor"
+            value={formData.supplier_id}
+            onChange={handleChange}
+            list="suppliers"
+            required
+            disabled={isLoading}
+          />
+          <datalist id="suppliers">
+            {filteredSuppliers.map((supplier) => (
+              <option key={supplier.id} value={supplier.name} />
+            ))}
+          </datalist>
+        </div>
         <div className="button-group">
           <button
             type="button"
@@ -243,7 +220,7 @@ const AddProduct = ({ onProductAdded }) => {
             className="save-button"
             disabled={isLoading}
           >
-            {isLoading ? "Adicionando..." : "Salvar"}
+            {isLoading ? 'Adicionando...' : 'Salvar'}
           </button>
         </div>
       </form>
@@ -252,4 +229,3 @@ const AddProduct = ({ onProductAdded }) => {
 };
 
 export default AddProduct;
-

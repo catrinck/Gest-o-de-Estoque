@@ -2,8 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import Sidebar from './components/Sidebar';
-import AddProduct from 'C:\\Users\\catri\\react-app\\frontend\\cadastroapp\\src\\components\\addProduct.js'
-import AddSupplier from 'C:\\Users\\catri\\react-app\\frontend\\cadastroapp\\src\\components\\addSupplier.js';
+import AddProduct from './components/addProduct.js'
+import AddSupplier from './components/addSupplier.js';
 
 function App() {
   return (
