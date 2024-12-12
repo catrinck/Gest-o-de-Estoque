@@ -16,7 +16,9 @@ const AddSupplier = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'phone' ? formatPhone(value) : value
+      [name]: name === 'phone' ? formatPhone(value) 
+            : name === 'cnpj' ? formatCNPJ(value)
+            : value
     }));
     setError(null);
     setSuccess(false);
@@ -38,6 +40,12 @@ const AddSupplier = () => {
       setError('Nome e telefone são obrigatórios');
       return false;
     }
+  
+    if (formData.cnpj && !validateCNPJ(formData.cnpj)) {
+      setError('CNPJ inválido. Use o formato XX.XXX.XXX/XXXX-XX');
+      return false;
+    }
+  
     return true;
   };
 
@@ -63,6 +71,25 @@ const AddSupplier = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+  const formatCNPJ = (value) => {
+    if (!value) return value;
+    const cnpj = value.replace(/\D/g, '');
+    if (cnpj.length <= 2) return cnpj;
+    if (cnpj.length <= 5) return `${cnpj.slice(0, 2)}.${cnpj.slice(2)}`;
+    if (cnpj.length <= 8) return `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(5)}`;
+    if (cnpj.length <= 12) return `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(5, 8)}/${cnpj.slice(8)}`;
+    return `${cnpj.slice(0, 2)}.${cnpj.slice(2, 5)}.${cnpj.slice(5, 8)}/${cnpj.slice(8, 12)}-${cnpj.slice(12, 14)}`;
+  };  
+  
+  const validateCNPJ = (cnpj) => {
+    const strippedCNPJ = cnpj.replace(/\D/g, '');
+    if (strippedCNPJ.length !== 14) return false;
+    
+    
+    if (/^(\d)\1+$/.test(strippedCNPJ)) return false;
+    
+    return true;
   };
 
   const formatPhone = (value) => {
@@ -97,6 +124,7 @@ const AddSupplier = () => {
             name="cnpj" 
             value={formData.cnpj} 
             onChange={handleChange}
+            maxLength={18} 
             disabled={isLoading}
           />
         </div>
