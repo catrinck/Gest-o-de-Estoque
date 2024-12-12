@@ -34,13 +34,21 @@ const AddSupplier = () => {
     setSuccess(true);
     setError(null);
   };
-
+  
   const validateForm = () => {
-    if (!formData.name || !formData.phone) {
-      setError('Nome e telefone são obrigatórios');
+    // Nome validation
+    if (!formData.name.trim()) {
+      setError('Nome é obrigatório');
       return false;
     }
   
+    // Phone validation
+    if (!formData.phone.trim()) {
+      setError('Telefone é obrigatório');
+      return false;
+    }
+  
+    // CNPJ validation (optional but must be valid if provided)
     if (formData.cnpj && !validateCNPJ(formData.cnpj)) {
       setError('CNPJ inválido. Use o formato XX.XXX.XXX/XXXX-XX');
       return false;
@@ -51,27 +59,44 @@ const AddSupplier = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-
     setIsLoading(true);
     setError(null);
     setSuccess(false);
-
+  
     try {
-      const response = await axios.post('http://localhost:3000/api/suppliers', formData);
+      // Validate form before submission
+      if (!validateForm()) {
+        setIsLoading(false);
+        return;
+      }
+  
+      // Clean CNPJ data before sending
+      const submissionData = {
+        ...formData,
+        cnpj: formData.cnpj.replace(/\D/g, '') // Remove non-digits
+      };
+  
+      const response = await axios.post('http://localhost:3000/api/suppliers', submissionData);
+      
+      console.log('Server response:', response); // Debug log
+      
       if (response.status === 201) {
+        setSuccess(true);
         resetForm();
+      } else {
+        throw new Error('Erro ao adicionar fornecedor');
       }
     } catch (error) {
-      setError(error.response?.data?.message || 'Erro ao adicionar fornecedor');
-      console.error('Erro ao adicionar fornecedor:', error);
+      console.error('Detailed error:', error);
+      setError(
+        error.response?.data?.message || 
+        'Erro ao adicionar fornecedor. Verifique os dados e tente novamente.'
+      );
     } finally {
       setIsLoading(false);
     }
   };
+  
   const formatCNPJ = (value) => {
     if (!value) return value;
     const cnpj = value.replace(/\D/g, '');
@@ -84,10 +109,39 @@ const AddSupplier = () => {
   
   const validateCNPJ = (cnpj) => {
     const strippedCNPJ = cnpj.replace(/\D/g, '');
+    
+    // If CNPJ is empty, it's optional so return true
+    if (!strippedCNPJ) return true;
+    
+    // Check length
     if (strippedCNPJ.length !== 14) return false;
     
-    
+    // Check if all digits are the same
     if (/^(\d)\1+$/.test(strippedCNPJ)) return false;
+    
+    // Validate CNPJ algorithm
+    let sum = 0;
+    let pos = 5;
+    
+    // First digit validation
+    for (let i = 0; i < 12; i++) {
+      sum += parseInt(strippedCNPJ.charAt(i)) * pos--;
+      if (pos < 2) pos = 9;
+    }
+    
+    let result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+    if (result !== parseInt(strippedCNPJ.charAt(12))) return false;
+    
+    // Second digit validation
+    sum = 0;
+    pos = 6;
+    for (let i = 0; i < 13; i++) {
+      sum += parseInt(strippedCNPJ.charAt(i)) * pos--;
+      if (pos < 2) pos = 9;
+    }
+    
+    result = sum % 11 < 2 ? 0 : 11 - (sum % 11);
+    if (result !== parseInt(strippedCNPJ.charAt(13))) return false;
     
     return true;
   };
