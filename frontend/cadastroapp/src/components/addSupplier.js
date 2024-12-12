@@ -16,7 +16,7 @@ const AddSupplier = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: name === 'phone' ? formatPhone(value) : value
     }));
     setError(null);
     setSuccess(false);
@@ -43,7 +43,7 @@ const AddSupplier = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
@@ -65,53 +65,62 @@ const AddSupplier = () => {
     }
   };
 
+  const formatPhone = (value) => {
+    if (!value) return value;
+    const phoneNumber = value.replace(/\D/g, '');
+    if (phoneNumber.length <= 2) return `(${phoneNumber}`;
+    if (phoneNumber.length <= 6) return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2)}`;
+    if (phoneNumber.length <= 10) return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2, 6)}-${phoneNumber.slice(6)}`;
+    return `(${phoneNumber.slice(0, 2)}) ${phoneNumber.slice(2, 7)}-${phoneNumber.slice(7, 11)}`;
+  };
+
   return (
     <div className="add-supplier-form">
       {error && <div className="error-message">{error}</div>}
       {success && <div className="success-message">Fornecedor adicionado com sucesso!</div>}
       <form onSubmit={handleSubmit}>
-        {}
         <div className="input-container"> 
-        <div className="box">NOME</div>
-        <input 
-          type="text" 
-          name="name" 
-          value={formData.name}
-          onChange={handleChange} 
-          required 
-          disabled={isLoading}
-        /> </div>
-        {}
+          <div className="box">NOME</div>
+          <input 
+            type="text" 
+            name="name" 
+            value={formData.name}
+            onChange={handleChange} 
+            required 
+            disabled={isLoading}
+          /> 
+        </div>
         <div className="input-container">
-        <div className="box">CNPJ (OPCIONAL)</div>
-        <input 
-          type="text" 
-          name="cnpj" 
-          value={formData.cnpj} 
-          onChange={handleChange}
-          disabled={isLoading}
-        /></div>
-        {}
+          <div className="box">CNPJ (OPCIONAL)</div>
+          <input 
+            type="text" 
+            name="cnpj" 
+            value={formData.cnpj} 
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+        </div>
         <div className="input-container">
-        <div className="box">TELEFONE</div>
-        <input 
-          type="tel" 
-          name="phone" 
-          value={formData.phone} 
-          onChange={handleChange} 
-          required 
-          disabled={isLoading}
-        /></div>
-        {}
+          <div className="box">TELEFONE</div>
+          <input 
+            type="tel" 
+            name="phone" 
+            value={formData.phone} 
+            onChange={handleChange} 
+            required 
+            disabled={isLoading}
+          />
+        </div>
         <div className="input-container">
-        <div className="box">ENDEREÇO (OPCIONAL)</div>
-        <input 
-          type="text" 
-          name="address" 
-          value={formData.address} 
-          onChange={handleChange}
-          disabled={isLoading}
-        /></div>
+          <div className="box">ENDEREÇO (OPCIONAL)</div>
+          <input 
+            type="text" 
+            name="address" 
+            value={formData.address} 
+            onChange={handleChange}
+            disabled={isLoading}
+          />
+        </div>
         <button 
           type="submit"
           disabled={isLoading}

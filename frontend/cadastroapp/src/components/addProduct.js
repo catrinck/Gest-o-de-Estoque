@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import '../addproduct.css';
+import "../App.css";
 
 const AddProduct = ({ onProductAdded }) => {
   const [formData, setFormData] = useState({
@@ -39,7 +40,6 @@ const AddProduct = ({ onProductAdded }) => {
       [name]: name.includes('quantity') ? parseInt(value) || 0 : value,
     }));
     setError(null);
-    setSuccess(false);
 
     // Filtragem do dropdown
     if (name === 'supplier_id') {
@@ -60,7 +60,6 @@ const AddProduct = ({ onProductAdded }) => {
       supplier_id: ''
     });
     setError(null);
-    setSuccess(false); // Garante que a mensagem de sucesso não será exibida
   };
 
   const validateForm = () => {
@@ -100,6 +99,7 @@ const AddProduct = ({ onProductAdded }) => {
 
       if (response.status === 201) {
         setSuccess(true);
+        setTimeout(() => setSuccess(false), 3000); // Exibe a mensagem de sucesso por 3 segundos
         resetForm();
         if (onProductAdded) {
           onProductAdded(response.data);
@@ -116,8 +116,8 @@ const AddProduct = ({ onProductAdded }) => {
   return (
     <div className="add-product-container">
       <h2 className="title">Cadastrar Produto</h2>
-      {error && <div className="error-message">{error}</div>}
-      {success && <div className="success-message">Produto adicionado com sucesso!</div>}
+      {error && <div className="notification-error">{error}</div>}
+      {success && <div className="notification-message">Produto adicionado com sucesso!</div>}
 
       <form onSubmit={handleSubmit} className="add-product-form">
         <div className="form-group">
@@ -222,7 +222,7 @@ const AddProduct = ({ onProductAdded }) => {
           >
             {isLoading ? 'Adicionando...' : 'Salvar'}
           </button>
-        </div>
+        </div> 
       </form>
     </div>
   );
